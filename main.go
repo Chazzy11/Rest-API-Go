@@ -8,6 +8,8 @@ import (
 	"encoding/json" // package for encoding and decoding json
 	"log" // package for logging errors
 	"github.com/gorilla/mux" // package for router from gorilla framework
+	"github.com/getsentry/sentry-go" // package for error tracking
+	"time" // package for time based functions
 )
 
 type song struct {
@@ -69,12 +71,32 @@ func deleteSong(w http.ResponseWriter, r *http.Request) {
 
 
 func main() {
-	router:= mux.NewRouter()
+	err := sentry.Init(sentry.ClientOptions{
+		Dsn: "___PUBLIC_DSN___",
+		// Set TracesSampleRate to 1.0 to capture 100%
+		// of transactions for performance monitoring.
+		// We recommend adjusting this value in production,
+		TracesSampleRate: 1.0,
+	  })
+	  if err != nil {
+		log.Fatalf("sentry.Init: %s", err)
+	  }
+	  // Flush buffered events before the program terminates.
+	  defer sentry.Flush(2 * time.Second)
+	
+	  sentry.CaptureMessage("It works!")
+	
+	// router:= mux.NewRouter()
 
-	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hello World") // handler function for the / route
-	}	)
+	// songs = append(songs, song{ID: "1", Title: "Lose Control", Artist: "Evanescence"})
+	// songs = append(songs, song{ID: "2", Title: "Amarylis", Artist: "Shinedown"})
 
-	http.ListenAndServe(":8080", router)
+	// router.HandleFunc("/songs", getSongs).Methods("GET")
+	// router.HandleFunc("/songs/{id}", getSong).Methods("GET")
+	// router.HandleFunc("/songs", createSong).Methods("POST")
+	// router.HandleFunc("/songs/{id}", updateSong).Methods("PUT")
+	// router.HandleFunc("/songs/{id}", deleteSong).Methods("DELETE")
+
+	// log.fatal(http.ListenAndServe(":8080", router))
 }
 
