@@ -38,7 +38,34 @@ func createSong(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewDecoder(r.Body).Decode(&song) // decode the request body and store in song object
 	songs = append(songs, song) // append the song to the songs slice
 	json.NewEncoder(w).Encode(song) // encode the song and return
+} // function to create a song
 
+func updateSong(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r) // get params from request body and store in params variable
+	for index, item := range songs { // loop through songs
+		if item.ID == params["id"] { // if song id matches the id in params
+			songs = append(songs[:index], songs[index+1:]...) // delete the song
+			var song song // create a song object
+			_ = json.NewDecoder(r.Body).Decode(&song) // decode the request body and store in song object
+			song.ID = params["id"] // assign the song id to the id in params
+			songs = append(songs, song) // append the song to the songs slice
+			json.NewEncoder(w).Encode(song) // encode the song and return
+			return
+		}
+	}
+	json.NewEncoder(w).Encode(songs) // if no song found return all songs
+} // function to update a song
+
+func deleteSong(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r) // get params from request body and store in params variable
+	for index, item := range songs { // loop through songs
+		if item.ID == params["id"] { // if song id matches the id in params
+			songs = append(songs[:index], songs[index+1:]...) // delete the song
+			break
+		}
+	}
+	json.NewEncoder(w).Encode(songs) // return all songs
+} // function to delete a song
 
 
 func main() {
