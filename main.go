@@ -3,7 +3,7 @@
 package main
 
 import (
-	"fmt" // package for formatting and printing
+	// "fmt" // package for formatting and printing
 	"net/http" // package for http based web programs
 	"encoding/json" // package for encoding and decoding json
 	"log" // package for logging errors
@@ -26,7 +26,7 @@ func getSongs(w http.ResponseWriter, r *http.Request) {
 
 func getSong(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r) // get params from request body and store in params variable 
-	for_, item := range songs { // loop through songs
+	for _, item := range songs { // loop through songs, underscore is used to ignore the index
 		if item.ID == params["id"] { // if song id matches the id in params
 			json.NewEncoder(w).Encode(item) // encode the song and return
 			return
@@ -72,7 +72,7 @@ func deleteSong(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	err := sentry.Init(sentry.ClientOptions{
-		Dsn: "___PUBLIC_DSN___",
+		Dsn: "https://4a9acdd1534746f0eb5ac6132fd8cadd@o4506638842986496.ingest.sentry.io/4506638866120707",
 		// Set TracesSampleRate to 1.0 to capture 100%
 		// of transactions for performance monitoring.
 		// We recommend adjusting this value in production,
@@ -86,17 +86,17 @@ func main() {
 	
 	  sentry.CaptureMessage("It works!")
 	
-	// router:= mux.NewRouter()
+	router:= mux.NewRouter()
 
-	// songs = append(songs, song{ID: "1", Title: "Lose Control", Artist: "Evanescence"})
-	// songs = append(songs, song{ID: "2", Title: "Amarylis", Artist: "Shinedown"})
+	songs = append(songs, song{ID: "1", Title: "Lose Control", Artist: "Evanescence"})
+	songs = append(songs, song{ID: "2", Title: "Amarylis", Artist: "Shinedown"})
 
-	// router.HandleFunc("/songs", getSongs).Methods("GET")
-	// router.HandleFunc("/songs/{id}", getSong).Methods("GET")
-	// router.HandleFunc("/songs", createSong).Methods("POST")
-	// router.HandleFunc("/songs/{id}", updateSong).Methods("PUT")
-	// router.HandleFunc("/songs/{id}", deleteSong).Methods("DELETE")
+	router.HandleFunc("/songs", getSongs).Methods("GET")
+	router.HandleFunc("/songs/{id}", getSong).Methods("GET")
+	router.HandleFunc("/songs", createSong).Methods("POST")
+	router.HandleFunc("/songs/{id}", updateSong).Methods("PUT")
+	router.HandleFunc("/songs/{id}", deleteSong).Methods("DELETE")
 
-	// log.fatal(http.ListenAndServe(":8080", router))
+	log.Fatal(http.ListenAndServe(":8080", router))
 }
 
